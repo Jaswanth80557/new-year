@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🎆 New Year 2026 Game 🎆</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins}
+body{background:#000;color:#fff;overflow:hidden}
+
+.screen{
+ position:absolute;width:100vw;height:100vh;
+ display:none;justify-content:center;align-items:center;
+ flex-direction:column;text-align:center;
+ animation:fade .7s ease;
+}
+.active{display:flex}
+@keyframes fade{from{opacity:0;transform:scale(1.1)}to{opacity:1;transform:scale(1)}}
+
+.cover{
+ background:linear-gradient(#000b,#000b),
+ url("group.jpg") center/cover no-repeat;
+}
+
+button{
+ padding:14px 34px;border:none;border-radius:30px;
+ background:gold;font-size:16px;cursor:pointer;margin-top:20px;
+}
+button:hover{transform:scale(1.1)}
+
+.card{background:#ffffff20;padding:14px;border-radius:20px;margin:8px;width:85%}
+.option{background:#ffffff25;padding:16px;margin:12px;border-radius:25px;width:80%;cursor:pointer}
+.option:hover{background:#ffffff55}
+
+#avatarGrid{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:15px;width:90%;
+}
+.avatarCard{
+ background:#ffffff20;border-radius:20px;
+ padding:20px;font-size:26px;cursor:pointer;
+}
+.avatarCard.selected{
+ background:linear-gradient(45deg,gold,orange);
+ color:black;box-shadow:0 0 25px gold;
+}
+
+.fire{
+ position:absolute;width:6px;height:6px;
+ background:gold;border-radius:50%;
+ animation:boom .8s linear;
+}
+@keyframes boom{to{transform:scale(15);opacity:0}}
+
+.bigText{
+ font-size:2.5em;
+ text-shadow:0 0 35px gold;
+}
+
+.winnerScreen{
+ background:linear-gradient(#000b,#000b);
+}
+.winnerScreen img{
+ width:250px;border-radius:20px;
+ box-shadow:0 0 40px gold;
+ margin:20px 0;
+}
+</style>
+</head>
+
+<body>
+
+<!-- COVER -->
+<div class="screen cover active" id="cover">
+ <h1>🎉 Welcome Everyone 🎉</h1>
+ <p>New Year Celebration Game 2026</p>
+ <p style="margin-top:15px;color:gold">
+  🎁 Gifts for <b>1st & 2nd</b> place winners <br>
+  Gifts will be given at college by <b>ADMIN</b>
+ </p>
+ <button onclick="show('name')">Start</button>
+</div>
+
+<!-- NAME -->
+<div class="screen" id="name">
+ <h1>Select Your Name</h1>
+ <select id="playerSelect" class="card"></select>
+ <button onclick="confirmName()">Continue</button>
+</div>
+
+<!-- AVATAR -->
+<div class="screen" id="avatar">
+ <h1>🎭 Choose Your Avatar</h1>
+ <div id="avatarGrid">
+  <div class="avatarCard" onclick="pickAvatar(this,'😎')">😎</div>
+  <div class="avatarCard" onclick="pickAvatar(this,'👑')">👑</div>
+  <div class="avatarCard" onclick="pickAvatar(this,'🚀')">🚀</div>
+  <div class="avatarCard" onclick="pickAvatar(this,'🧠')">🧠</div>
+  <div class="avatarCard" onclick="pickAvatar(this,'🔥')">🔥</div>
+  <div class="avatarCard" onclick="pickAvatar(this,'⚡')">⚡</div>
+  <div class="avatarCard" onclick="pickAvatar(this,'🐺')">🐺</div>
+  <div class="avatarCard" onclick="pickAvatar(this,'🌟')">🌟</div>
+  <div class="avatarCard" onclick="pickAvatar(this,'🦁')">🦁</div>
+ </div>
+ <button onclick="startGame()">Start Game</button>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="game">
+ <h2 id="qText"></h2>
+ <div id="options"></div>
+</div>
+
+<!-- FINISH -->
+<div class="screen" id="finish">
+ <h1>🎉 Game Completed 🎉</h1>
+ <p>Your Score: <b><span id="scoreShow"></span> / 25</b></p>
+ <button onclick="showLeaderboard()">View Leaderboard</button>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="screen" id="leaderboard">
+ <h1>🏆 Leaderboard 🏆</h1>
+ <div id="lb"></div>
+ <button onclick="showWinners()">See Winners</button>
+</div>
+
+<!-- 1st PLACE -->
+<div class="screen winnerScreen" id="firstWinner">
+ <h1 class="bigText">🥇 First Place</h1>
+ <img src="winner1.jpg">
+ <p>Since you are 1st, get blessings from <b>Devatha</b></p>
+ <button onclick="show('secondWinner')">Next</button>
+</div>
+
+<!-- 2nd PLACE -->
+<div class="screen winnerScreen" id="secondWinner">
+ <h1 class="bigText">🥈 Second Place</h1>
+ <img src="winner2.jpg">
+ <p>Since you are 2nd, get blessings from <b>Chinna Devatha</b></p>
+ <button onclick="show('finalCongrats')">Finish</button>
+</div>
+
+<!-- FINAL CONGRATS -->
+<div class="screen" id="finalCongrats">
+ <div class="bigText">🎉 Congratulations Everyone 🎉</div>
+ <p style="margin-top:20px">
+  Happy New Year 2026 💫<br><br>
+  May this year be yours and make you happy.<br>
+  Keep smiling — whatever happens, it happens 🌸
+ </p>
+</div>
+
+<script>
+const players=[
+"Navya","Sahas","Jaswanth (ADMIN)",
+"Charitha","Nithya","Vyshnav",
+"Shakir","Meenakshi","Vishnavi"
+];
+
+const questions=[
+{q:"What disappears the moment you say its name?",o:["Silence","Fear","Dream"],a:0},
+{q:"What can travel around the world while staying in one corner?",o:["Stamp","Air","Light"],a:0},
+{q:"What belongs to you but others use it more?",o:["Your name","Phone","Seat"],a:0},
+{q:"Tall when young, short when old?",o:["Candle","Tree","Shadow"],a:0},
+{q:"The more you remove, the bigger it gets?",o:["Hole","Fire","Debt"],a:0},
+{q:"One eye but cannot see?",o:["Needle","Cyclops","Storm"],a:0},
+{q:"Fills a room but takes no space?",o:["Light","Sound","Gas"],a:0},
+{q:"Many teeth but can’t bite?",o:["Comb","Saw","Zipper"],a:0},
+{q:"Always coming but never arrives?",o:["Tomorrow","Wind","Train"],a:0},
+{q:"Catch but can’t throw?",o:["Cold","Ball","Stone"],a:0},
+{q:"Head and tail but no body?",o:["Coin","Snake","Road"],a:0},
+{q:"Runs but never walks?",o:["River","Wind","Time"],a:0},
+{q:"Always in front but unseen?",o:["Future","Shadow","Air"],a:0},
+{q:"Neck but no head?",o:["Bottle","Shirt","Guitar"],a:0},
+{q:"Broken never falls, fallen never breaks?",o:["Promise & Rain","Glass & Night","Silence & Shadow"],a:0},
+{q:"Keys but no locks?",o:["Keyboard","House","Map"],a:0},
+{q:"Legs but doesn’t walk?",o:["Table","Chair","Bed"],a:0},
+{q:"Mouth but never talks?",o:["River","Bottle","Cave"],a:0},
+{q:"Fills room, leaves it empty?",o:["Light","Sound","Darkness"],a:0},
+{q:"Goes up but never comes down?",o:["Age","Smoke","Rocket"],a:0},
+{q:"Cities & rivers but no life?",o:["Map","Dream","Painting"],a:0},
+{q:"Once in minute, twice in moment?",o:["Letter M","Time","Shadow"],a:0},
+{q:"Hands but cannot clap?",o:["Clock","Robot","Statue"],a:0},
+{q:"Gets wetter as it dries?",o:["Towel","Cloth","Sponge"],a:0},
+{q:"One eye but still cannot see?",o:["Needle","Cyclops","Storm"],a:0},
+{q:"💖 Did you enjoy the game?",o:["Yes 😍","Absolutely 🔥","Very much 😄"],a:-1}
+];
+
+let session=JSON.parse(localStorage.getItem("session"))||null;
+let results=JSON.parse(localStorage.getItem("results"))||[];
+let played=JSON.parse(localStorage.getItem("playedPlayers"))||[];
+
+const sel=document.getElementById("playerSelect");
+players.forEach(p=>{
+ let o=document.createElement("option");
+ o.value=p;o.textContent=p;
+ sel.appendChild(o);
+});
+
+function show(id){
+ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+}
+
+function confirmName(){
+ if(played.includes(sel.value)) return alert("This player already played.");
+ session={name:sel.value,avatar:"",score:0,qi:0};
+ localStorage.setItem("session",JSON.stringify(session));
+ show("avatar");
+}
+
+function pickAvatar(el,a){
+ document.querySelectorAll(".avatarCard").forEach(x=>x.classList.remove("selected"));
+ el.classList.add("selected");
+ session.avatar=a;
+ localStorage.setItem("session",JSON.stringify(session));
+}
+
+function startGame(){
+ if(!session.avatar) return alert("Choose an avatar");
+ show("game"); loadQ();
+}
+
+function loadQ(){
+ document.getElementById("qText").innerText=
+ `Question ${session.qi+1}/26\n${questions[session.qi].q}`;
+ const ops=document.getElementById("options");
+ ops.innerHTML="";
+ questions[session.qi].o.forEach((t,i)=>{
+  let d=document.createElement("div");
+  d.className="option";
+  d.innerText=t;
+  d.onclick=()=>selectOption(i);
+  ops.appendChild(d);
+ });
+}
+
+function selectOption(i){
+ if(questions[session.qi].a===i) session.score++;
+ session.qi++;
+ localStorage.setItem("session",JSON.stringify(session));
+ fire();
+ if(session.qi<26) loadQ(); else finishGame();
+}
+
+function finishGame(){
+ results.push({name:session.name,score:session.score,avatar:session.avatar});
+ played.push(session.name);
+ localStorage.setItem("results",JSON.stringify(results));
+ localStorage.setItem("playedPlayers",JSON.stringify(played));
+ localStorage.removeItem("session");
+ document.getElementById("scoreShow").innerText=session.score;
+ show("finish");
+}
+
+function showLeaderboard(){
+ results.sort((a,b)=>b.score-a.score);
+ document.getElementById("lb").innerHTML=
+ results.map((r,i)=>`<div class="card">${i+1}. ${r.avatar} ${r.name} – ${r.score}</div>`).join("");
+ show("leaderboard");
+}
+
+function showWinners(){
+ results.sort((a,b)=>b.score-a.score);
+ show("firstWinner");
+}
+
+function fire(){
+ for(let i=0;i<10;i++){
+  let f=document.createElement("div");
+  f.className="fire";
+  f.style.left=Math.random()*100+"vw";
+  f.style.top=Math.random()*100+"vh";
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(),600);
+ }
+}
+
+/* Resume if disconnected */
+if(session && !played.includes(session.name)){
+ show("game");
+ loadQ();
+}
+</script>
+
+</body>
+</html>
